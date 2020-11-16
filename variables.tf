@@ -169,10 +169,22 @@ variable "task_memory" {
   default     = 512
 }
 
+variable "create_task_exec_role" {
+  type        = bool
+  description = "Set to false to prevent the module from creating a task exec role"
+  default     = true
+}
+
 variable "task_exec_role_arn" {
   type        = string
   description = "The ARN of IAM role that allows the ECS/Fargate agent to make calls to the ECS API on your behalf"
   default     = ""
+}
+
+variable "create_task_role" {
+  type        = bool
+  description = "Set to false to prevent the module from creating a task role"
+  default     = true
 }
 
 variable "task_role_arn" {
