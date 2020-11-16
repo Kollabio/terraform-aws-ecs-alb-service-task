@@ -1,5 +1,5 @@
 module "default_label" {
-  source      = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.17.0"
+  source      = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.19.0"
   enabled     = var.enabled
   attributes  = var.attributes
   delimiter   = var.delimiter
@@ -11,21 +11,21 @@ module "default_label" {
 }
 
 module "task_label" {
-  source     = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.17.0"
+  source     = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.19.0"
   enabled    = var.enabled && length(var.create_task_role) == 0
   context    = module.default_label.context
   attributes = compact(concat(var.attributes, ["task"]))
 }
 
 module "service_label" {
-  source     = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.17.0"
+  source     = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.19.0"
   enabled    = var.enabled
   context    = module.default_label.context
   attributes = compact(concat(var.attributes, ["service"]))
 }
 
 module "exec_label" {
-  source     = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.17.0"
+  source     = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.19.0"
   enabled    = var.enabled && length(var.create_task_exec_role) == 0
   context    = module.default_label.context
   attributes = compact(concat(var.attributes, ["exec"]))
