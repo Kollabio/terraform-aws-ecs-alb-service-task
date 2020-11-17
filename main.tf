@@ -12,7 +12,7 @@ module "default_label" {
 
 module "task_label" {
   source     = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.19.0"
-  enabled    = var.enabled && length(var.create_task_role) == 0
+  enabled    = var.enabled && var.create_task_role == false
   context    = module.default_label.context
   attributes = compact(concat(var.attributes, ["task"]))
 }
@@ -26,7 +26,7 @@ module "service_label" {
 
 module "exec_label" {
   source     = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.19.0"
-  enabled    = var.enabled && length(var.create_task_exec_role) == 0
+  enabled    = var.enabled && var.create_task_exec_role == false
   context    = module.default_label.context
   attributes = compact(concat(var.attributes, ["exec"]))
 }
