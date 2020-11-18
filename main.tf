@@ -39,8 +39,8 @@ resource "aws_ecs_task_definition" "default" {
   network_mode             = var.network_mode
   cpu                      = var.task_cpu
   memory                   = var.task_memory
-  execution_role_arn       = var.create_task_exec_role ? var.task_exec_role_arn : join("", aws_iam_role.ecs_exec.*.arn)
-  task_role_arn            = var.create_task_role ? var.task_role_arn : join("", aws_iam_role.ecs_task.*.arn)
+  execution_role_arn       = var.create_task_exec_role == false ? var.task_exec_role_arn : join("", aws_iam_role.ecs_exec.*.arn)
+  task_role_arn            = var.create_task_role == false ? var.task_role_arn : join("", aws_iam_role.ecs_task.*.arn)
 
   dynamic "proxy_configuration" {
     for_each = var.proxy_configuration == null ? [] : [var.proxy_configuration]
