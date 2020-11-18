@@ -12,7 +12,7 @@ module "default_label" {
 
 module "task_label" {
   source     = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.19.0"
-  enabled    = var.enabled && var.create_task_role == false
+  enabled    = var.enabled && var.create_task_role
   context    = module.default_label.context
   attributes = compact(concat(var.attributes, ["task"]))
 }
@@ -26,7 +26,7 @@ module "service_label" {
 
 module "exec_label" {
   source     = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.19.0"
-  enabled    = var.enabled && var.create_task_exec_role == false
+  enabled    = var.enabled && var.create_task_exec_role
   context    = module.default_label.context
   attributes = compact(concat(var.attributes, ["exec"]))
 }
@@ -100,7 +100,7 @@ resource "aws_ecs_task_definition" "default" {
 
 # IAM
 data "aws_iam_policy_document" "ecs_task" {
-  count = var.enabled && var.create_task_role == false ? 1 : 0
+  count = var.enabled && var.create_task_role ? 1 : 0
 
   statement {
     effect  = "Allow"
@@ -114,7 +114,7 @@ data "aws_iam_policy_document" "ecs_task" {
 }
 
 resource "aws_iam_role" "ecs_task" {
-  count = var.enabled && var.create_task_role == false ? 1 : 0
+  count = var.enabled && var.create_task_role ? 1 : 0
 
   name                 = module.task_label.id
   assume_role_policy   = join("", data.aws_iam_policy_document.ecs_task.*.json)
@@ -172,7 +172,7 @@ resource "aws_iam_role_policy" "ecs_service" {
 
 # IAM role that the Amazon ECS container agent and the Docker daemon can assume
 data "aws_iam_policy_document" "ecs_task_exec" {
-  count = var.enabled && var.create_task_exec_role == false ? 1 : 0
+  count = var.enabled && var.create_task_exec_role ? 1 : 0
 
   statement {
     actions = ["sts:AssumeRole"]
@@ -185,7 +185,7 @@ data "aws_iam_policy_document" "ecs_task_exec" {
 }
 
 resource "aws_iam_role" "ecs_exec" {
-  count                = var.enabled && var.create_task_exec_role == false ? 1 : 0
+  count                = var.enabled && var.create_task_exec_role ? 1 : 0
   name                 = module.exec_label.id
   assume_role_policy   = join("", data.aws_iam_policy_document.ecs_task_exec.*.json)
   permissions_boundary = var.permissions_boundary == "" ? null : var.permissions_boundary
@@ -193,7 +193,7 @@ resource "aws_iam_role" "ecs_exec" {
 }
 
 data "aws_iam_policy_document" "ecs_exec" {
-  count = var.enabled && var.create_task_exec_role == false ? 1 : 0
+  count = var.enabled && var.create_task_exec_role ? 1 : 0
 
   statement {
     effect    = "Allow"
@@ -213,7 +213,7 @@ data "aws_iam_policy_document" "ecs_exec" {
 }
 
 resource "aws_iam_role_policy" "ecs_exec" {
-  count  = var.enabled && var.create_task_exec_role == false ? 1 : 0
+  count  = var.enabled && var.create_task_exec_role ? 1 : 0
   name   = module.exec_label.id
   policy = join("", data.aws_iam_policy_document.ecs_exec.*.json)
   role   = join("", aws_iam_role.ecs_exec.*.id)
