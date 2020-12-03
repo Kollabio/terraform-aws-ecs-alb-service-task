@@ -222,7 +222,7 @@ resource "aws_iam_role_policy" "ecs_exec" {
 # Service
 ## Security Groups
 resource "aws_security_group" "ecs_service" {
-  count       = var.enabled ? 1 : 0
+  count       = var.enabled && var.create_service_security_group ? 1 : 0
   vpc_id      = var.vpc_id
   name        = module.service_label.id
   description = "Allow ALL egress from ECS service"
@@ -230,7 +230,7 @@ resource "aws_security_group" "ecs_service" {
 }
 
 resource "aws_security_group_rule" "allow_all_egress" {
-  count             = var.enabled && var.enable_all_egress_rule ? 1 : 0
+  count             = var.enabled && var.create_service_security_group && var.enable_all_egress_rule ? 1 : 0
   type              = "egress"
   from_port         = 0
   to_port           = 0
@@ -240,7 +240,7 @@ resource "aws_security_group_rule" "allow_all_egress" {
 }
 
 resource "aws_security_group_rule" "allow_icmp_ingress" {
-  count             = var.enabled && var.enable_icmp_rule ? 1 : 0
+  count             = var.enabled && var.create_service_security_group && var.enable_icmp_rule ? 1 : 0
   description       = "Enables ping command from anywhere, see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/security-group-rules-reference.html#sg-rules-ping"
   type              = "ingress"
   from_port         = 8
@@ -251,7 +251,7 @@ resource "aws_security_group_rule" "allow_icmp_ingress" {
 }
 
 resource "aws_security_group_rule" "alb" {
-  count                    = var.enabled && var.use_alb_security_group ? 1 : 0
+  count                    = var.enabled && var.create_service_security_group && var.use_alb_security_group ? 1 : 0
   type                     = "ingress"
   from_port                = var.container_port
   to_port                  = var.container_port
@@ -261,7 +261,7 @@ resource "aws_security_group_rule" "alb" {
 }
 
 resource "aws_security_group_rule" "nlb" {
-  count             = var.enabled && var.use_nlb_cidr_blocks ? 1 : 0
+  count             = var.enabled && var.create_service_security_group && var.use_nlb_cidr_blocks ? 1 : 0
   type              = "ingress"
   from_port         = var.nlb_container_port
   to_port           = var.nlb_container_port
@@ -341,7 +341,7 @@ resource "aws_ecs_service" "ignore_changes_task_definition" {
   dynamic "network_configuration" {
     for_each = var.network_mode == "awsvpc" ? ["true"] : []
     content {
-      security_groups  = compact(concat(var.security_group_ids, aws_security_group.ecs_service.*.id))
+      security_groups  = var.create_service_security_group ? compact(concat(var.security_group_ids, aws_security_group.ecs_service.*.id)) : var.security_group_ids
       subnets          = var.subnet_ids
       assign_public_ip = var.assign_public_ip
     }
@@ -423,7 +423,7 @@ resource "aws_ecs_service" "default" {
   dynamic "network_configuration" {
     for_each = var.network_mode == "awsvpc" ? ["true"] : []
     content {
-      security_groups  = compact(concat(var.security_group_ids, aws_security_group.ecs_service.*.id))
+      security_groups  = var.create_service_security_group ? compact(concat(var.security_group_ids, aws_security_group.ecs_service.*.id)) : var.security_group_ids
       subnets          = var.subnet_ids
       assign_public_ip = var.assign_public_ip
     }

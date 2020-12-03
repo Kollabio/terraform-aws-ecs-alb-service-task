@@ -100,6 +100,12 @@ variable "security_group_ids" {
   default     = []
 }
 
+variable "create_service_security_group" {
+  type        = bool
+  description = "A flag to enable/disable adding a new security group for service"
+  default     = false
+}
+
 variable "enable_all_egress_rule" {
   type        = bool
   description = "A flag to enable/disable adding the all ports egress rule to the ECS security group"
